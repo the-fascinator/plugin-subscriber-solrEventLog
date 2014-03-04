@@ -120,7 +120,9 @@ import org.slf4j.MDC;
 
 public class SolrEventLogSubscriber implements Subscriber {
 
-    /** Logging */
+    private static final int SOLR_SERVER_RETRY_COUNT = 20;
+
+	/** Logging */
     private final Logger log = LoggerFactory
             .getLogger(SolrEventLogSubscriber.class);
 
@@ -242,10 +244,24 @@ public class SolrEventLogSubscriber implements Subscriber {
             }
             core = new CommonsHttpSolrServer(uri.toURL());
 
+            boolean serverOnline = false;
+            int retryCount = 0;
             // Small sleep whilst the solr index is still coming online
-            Thread.sleep(200);
-            // Make sure it is online
-            core.ping();
+			while (!serverOnline) {
+				Thread.sleep(200);
+				// Make sure it is online
+				try {
+					core.ping();
+				} catch (Exception ex) {
+					retryCount++;
+					log.error("Server not yet online. Attempt: "+retryCount + " of "+SOLR_SERVER_RETRY_COUNT,ex);
+					if(retryCount == SOLR_SERVER_RETRY_COUNT) {
+						throw ex;
+					}
+				}
+			}
+            
+            
 
             // Buffering
             docBuffer = new ArrayList<String>();
