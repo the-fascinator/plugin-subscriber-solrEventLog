@@ -252,6 +252,7 @@ public class SolrEventLogSubscriber implements Subscriber {
 				// Make sure it is online
 				try {
 					core.ping();
+					serverOnline = true;
 				} catch (Exception ex) {
 					retryCount++;
 					log.error("Server not yet online. Attempt: "+retryCount + " of "+SOLR_SERVER_RETRY_COUNT,ex);
