@@ -1,0 +1,19 @@
+sudo: required
+language: java
+services:
+- docker
+before_install:
+- mkdir /tmp/build
+- docker pull qcifengineering/redbox-builder
+- docker run -v /tmp/build:/build -e "CLONEPATH=https://github.com/the-fascinator/plugin-subscriber-solrEventLog.git"
+  qcifengineering/redbox-builder
+install: true
+script: true
+after_success:
+- docker run -v /tmp/build:/build -e "SONATYPE_USERNAME=$SONATYPE_USERNAME" -e "SONATYPE_PASSWORD=$SONATYPE_PASSWORD"
+  qcifengineering/redbox-builder /bin/bash -c "cd build/src;mvn --settings /m2_repo/travis-settings.xml
+  -Dmaven.repo.local=/m2_repo -DskipTests=true deploy"
+env:
+  global:
+  - secure: hJBWVYBliV+p4Jr587FQ6OSXmkf+4kMHBbSmnSt9cE370srXxHjI9Dbt+MqVh9+fW+3t6MYBadBfzUCZZUvF3mzBDhUVQMvjz+YtZ/X787g3BLmVg5SoeoyC39FTGhUqSpIHCcv35S5pJZE8tkJd4jiSYvIlrTvu10Jx6xX+WXUytyvFe51tXeS3D0ttJA2HOuS8y1PAHYmK19vUUtV4D5Gv/uXpAjSXCGH6ZQw8k3s3prgPpkY/+ZBLhVjHBhB3FjlszbBlpvEYZL/I9wChXWXA7PsbjaEzS4hy5kKgQnh6T78lvyNcjvvzybfypDK7HdwIs/V6L6L+Qt6fUzOILtfB48QjO/hcJ8+kfRbOCrWLTU1goSF41GYUG+hb9yeCfu3C/XmMd+HEP//6F6jZMJsTdLl62heKX+3rSd4PNskwXi/Wju9CjPYxdR/4LCEOl8q0VcineAkxZKNHNZqAnPrie/HdZ7Tey72UCzQ5sQoQ65SX5mdFTg62yziGcIJk0Yhol6XlHFurAn/Yo2IKj3hSkRlieyhPD9Taj3LDQkUdx19YKx3eK8A71/rEVDD/R9BE/WLgosZRFxzTUktkgxUqGBucZ7Om2Z5+JKezCn9465tv5dQIbuDzEJnspeibDO/BGvJZ+CQB0KlfLY9GW58l3w9yM8DflGKe9ZUh53Q=
+  - secure: cjeyopTfNe/H8yeXhfeQbdVlE6+wflmbOp+SLDnM+P75yMJenTqpshPX5+u4D6gtc7Zm330yomN8gV6pedFRopNPUU8bf5B+PSqPrZTzv119OnulwI6f/0Rrap/Qgwo429pUypFwfhzK2FffyY8KOQbL/Ehr3VsaT1ILduJZFZmrtSC32Fs+6MgeuxBw8EtPSq3QWr4kE+l1mUcLbTvmGrv/CgQOTUfbEjknTsVYl/5AZcqYMJLcR+6Q7yyGjGZ18KWUxycr5N2D1ujvZiJqwps8h+XKpOtWL8lzhsFFmI8Eu37KGCuulz293BsY4ME0tMMK5WFessyyr5jB+oZ25MS/oAkcC6Dgis56cFDQKheoTw2nH1X3yLJ4FU4ofAwNMSBHziUiYFPTMlbg3kO7NZTd35kzJiMUawe1UsAekvNyexW3lK/Bn/G0U7KgPwnUvx0gx/3G665A8M6RKwGVhXc5E3DrSeEisvQfn1GH3OUj0oq6Z/ZUViri/bPqR9t1W/PY5NYjENsz4wWbd0U3g3iSfMmdIIbUOgwf9tEMgqh8HYP8Z9vPtawJtiGuPe7nDXMVBpE4X2cjNB9d6DJbKilufBE9onTf+hzU5WUEsDr7NEIYLsnofis4KHjtDKZInENiS+QA8AhoIWsn3/63eOq2QDzu4VC1yVtERkpJcPs=
